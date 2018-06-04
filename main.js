@@ -4,15 +4,27 @@ var camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeig
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth,window.innerHeight + document.getElementById("controls").clientHeight);
 document.body.appendChild(renderer.domElement);
-let btn = document.getElementById("parseInput");
+let btn = document.getElementById("startTimer");
+let btn2 = document.getElementById("Randomize");
+
 
 btn.addEventListener("click",function(e){
-	console.log("test")
 	let data = document.getElementById("data").value;
-	parseData(data);
+	
+	readData(parseData(data),document.getElementById("timer").value);
 	
 });
+//let operations = [right(),rightInv(),left(),leftInv(),front(),frontInv(),back(),backInv(),top(),topInv,bottom(),bottomInv()];
+btn2.addEventListener("click",function(e){
+	var operations = [right,rightInv,left,leftInv,front,frontInv,back,backInv,top,topInv,bottom,bottomInv];
+	for(var i = 0; i < 30; i++){
+		let op = Math.floor(Math.random() * 12);
+		console.log(op)
+		operations[op]()
+	}
 
+	
+});
 
 
 var controls = new THREE.OrbitControls(camera,renderer.domElement);
@@ -298,7 +310,7 @@ function right(){
 		
 	}
 	
-	function back(){
+	function backInv(){
 		for(var i = 0; i < cube[0].length; i++){
 			let temp = cube[4][0][i].material;
 			cube[4][0][i].material = cube[2][i][0].material;
@@ -328,7 +340,7 @@ function right(){
 		
 		
 	}
-	function backInv(){
+	function back(){
 		for(var i = 0; i < cube[0].length; i++){
 			let temp = cube[4][0][i].material;
 			cube[4][0][i].material = cube[3][i][2].material;
@@ -460,7 +472,7 @@ function right(){
 		}
 		
 	}
-	function bottom(){
+	function bottomInv(){
 		for(var i = 0; i < cube[0].length; i++){
 			
 			let temp = cube[0][2][i].material;
@@ -483,7 +495,7 @@ function right(){
 			
 		}
 	}
-	function bottomInv(){
+	function bottom(){
 		for(var i = 0; i < cube[0].length; i++){
 			let temp = cube[0][cube[0].length - 1][i].material;
 			cube[0][cube[0].length - 1][i].material = cube[2][cube[0].length - 1][i].material;
@@ -573,16 +585,24 @@ function parseData(e){
 			}
 		}
 	}
-	solveCube(queue);
+	//solveCube(queue);
+	return queue;
 }
 
-function solveCube(q){
+function readData(que,time){
+	let timer = time ? time : 0
+	var loopInt = setInterval(function(){solveCube(que,loopInt)},timer)
+}
+
+function solveCube(q,id){
 	let len = q.length();
-	for(var i = 0; i < len; i++){
-		let op = q.first();
-		q.dequeue();
-		op();
+	let op = q.first();
+	q.dequeue();
+	op();
+	if(q.length() === 0){
+		clearInterval(id)
 	}
+	console.log("hello?")
 }
 
 class Queue{
